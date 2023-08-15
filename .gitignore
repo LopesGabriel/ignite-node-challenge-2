@@ -1,0 +1,5 @@
+node_modules
+db/dev.db
+db/test.db
+.env
+.env.test
