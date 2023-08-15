@@ -19,13 +19,15 @@ export async function mealsRoutes(app: FastifyInstance) {
     const bodySchema = z.object({
       name: z.string(),
       description: z.string().optional(),
-      mealDatetime: z.string().optional(),
+      mealDatetime: z.string().default(new Date().toISOString()),
       isInDiet: z.boolean(),
     })
 
     const { isInDiet, mealDatetime, name, description } = bodySchema.parse(
       req.body,
     )
+
+    console.log({ mealDatetime })
 
     const transaction = await knex('meals')
       .insert({
