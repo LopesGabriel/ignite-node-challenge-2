@@ -27,8 +27,6 @@ export async function mealsRoutes(app: FastifyInstance) {
       req.body,
     )
 
-    console.log({ mealDatetime })
-
     const transaction = await knex('meals')
       .insert({
         id: randomUUID(),
@@ -159,7 +157,7 @@ export async function mealsRoutes(app: FastifyInstance) {
     const meals = await knex('meals')
       .where({ userSession })
       .select('*')
-      .orderBy('mealDatetime', 'desc')
+      .orderBy('mealDatetime', 'asc')
 
     let inDietAmount = 0
     let outDietAmount = 0
@@ -170,6 +168,8 @@ export async function mealsRoutes(app: FastifyInstance) {
       if (meal.isInDiet) {
         inDietAmount++
         currentDietSequence++
+        if (currentDietSequence > bestInDietSequence)
+          bestInDietSequence = currentDietSequence
       } else {
         outDietAmount++
         if (currentDietSequence > bestInDietSequence)
@@ -179,10 +179,12 @@ export async function mealsRoutes(app: FastifyInstance) {
     }
 
     return {
-      mealsAmount: meals.length,
-      inDietAmount,
-      outDietAmount,
-      bestInDietSequence,
+      data: {
+        mealsAmount: meals.length,
+        inDietAmount,
+        outDietAmount,
+        bestInDietSequence,
+      },
     }
   })
 }
